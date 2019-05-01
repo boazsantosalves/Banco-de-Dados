@@ -1,0 +1,97 @@
+/*-----CRIANDO TABELAS-----*/
+
+create table clientes(
+  cpf bigint primary key, 
+  nome text, 
+  endereco text, 
+  cidade varchar(50), 
+  uf char(2), 
+  cep integer, 
+  telefone integer, 
+  data_cadastro date, 
+  data_nascimento date
+  
+);
+
+create table funcionario(
+  cpf bigint primary key, 
+  nome text, 
+  endereco text, 
+  cidade varchar(50), 
+  uf char(2), 
+  cep integer, 
+  telefone integer, 
+  data_admissao date, 
+  data_nascimento date
+);
+
+create table produto(
+  codigo_produto integer primary key, 
+  descricao varchar(50), 
+  quantidade integer, 
+  preco_unitario numeric(12,2) not null,
+  estoque_minimo integer check(estoque_minmo>0), 
+  estoque_maximo integer
+);
+
+create table venda(
+  codigo_venda integer primary key, 
+  data_venda date, 
+  cpf_cliente bigint references clientes(cpf), 
+  cpf_funcionario bigint references funcionario(cpf)
+);
+
+
+create table vendas_item(
+  codigo_item integer primary key, 
+  codigo_venda integer references venda(codigo_venda), 
+  codigo_produto integer references produto(codigo_produto), 
+  quantidade_item integer
+);
+
+create table bonus(
+  codigo_bonus integer primary key, 
+  cpf_cliente bigint references clientes(cpf), 
+  codigo_venda integer references venda(codigo_venda), 
+  bonus numeric(12,2) 
+);
+
+create table comissão(
+  codigo_comissao integer primary key, 
+  cpf_funcionario bigint references funcionario(cpf), 
+  codigo_venda integer references venda(codigo_venda), 
+  comissao numeric(12,2)
+);
+
+
+/*-----INSERINDO DADOS-----*/
+
+insert into clientes values(1,"João","Rua #EuSouZika", "Alagoinha","PB", 552136, 7856256, '2017-05-25', '2002-02-02');
+insert into clientes values(2,"Maria","Rua #NaoEntraNiguém", "Guarabira","PB", 485136, 9856256, '2017-05-01', '2000-10-01');
+
+insert into funcionario values(1, "Robcleison", "Rua agnaldo Timóteo", "João Pessoa", "PB", 852357, 88700152, '2018-05-20', '1998-10-10');
+insert into funcionario values(2, "Vancleide", "Rua do Chá maluco", "João Pessoa", "PB", 852357, 99700152, '2017-05-30', '1995-11-10');
+
+insert into produto values(00, "garrafa azul de papel", 1000, 15.00, 10, 5000);
+insert into produto values(01, "chapéu de couro de rato", 3500, 40.00, 10, 7000);
+
+insert into venda values(0001, "2019-05-01", 2, 1);
+insert into venda values(0002, "2019-04-29", 2, 2);
+
+
+/*ATUALIZANDO PREÇO*/
+
+update produto set preco_unitario=preco_unitario + 3.85 where codigo_produto=01;
+
+
+/*SELECTS*/
+
+select * from produto where codigo_produto=01;
+select * from produto where codigo_produto=00;
+
+
+select c.nome, f.nome from venda v
+join clientes c
+on c.cpf=v.cpf_cliente
+join funcionario f
+on f.cpf = v.cpf_funcionario; 
