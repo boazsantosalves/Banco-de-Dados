@@ -1,0 +1,123 @@
+create table clientes(
+    cpf integer primary key,
+    nome varchar(60),
+    dtNasc date
+);
+
+create table modelo(
+    codMod integer primary key,
+    Desc_2 varchar(40)
+);
+
+create table veiculo(
+    placa varchar(8) primary key,
+    modelo_codMod integer references modelo(codMod),
+    cliente_cpf integer references clientes(cpf),
+    cor varchar(20),
+    ano integer
+);
+
+create table patio(
+    num integer primary key,
+    ender varchar(40),
+    capacidade integer
+);
+
+create table estaciona(
+    cod integer primary key,
+    patio_num integer references patio(num),
+    veiculo_placa varchar(8) references veiculo(placa),
+    dtEntrada varchar(10),
+    dtSaida varchar(10),
+    hsEntrada varchar(10),
+    hsSaida varchar(10)
+);
+
+
+insert into clientes values(1, "José", "1980-05-20");
+insert into clientes values(2, "Maria", "1985-06-01");
+insert into clientes values(3, "João", "1990-10-4");
+
+insert into modelo values(01, "Celta");
+insert into modelo values(02, "BMW");
+insert into modelo values(03, "Duster");
+
+insert into veiculo values("ABC-100", 01, 1, "Verde", 2000);
+insert into veiculo values("BOA-255", 02, 2, "Vermelho", 2017);
+insert into veiculo values("DTB-200", 03, 3, "Branco", 1970);
+
+insert into patio values(1, "Rua Não Sei", 1000);
+
+insert into estaciona values(001, 1, "ABC-100", "2019-05-01", "2019-07-01", "10:00", "15:00");
+insert into estaciona values(002, 1, "BOA-255", "2019-05-02", "2019-06-01", "12:00", "17:00");
+insert into estaciona values(003, 1, "DTB-200", "2019-05-03", "2019-10-10", "09:00", "13:00");
+
+
+/*--------- 1 -----------*/
+
+select c.nome, m.Desc_2, v.placa from clientes c
+join veiculo v
+on c.cpf=v.cliente_cpf
+join modelo m
+on m.codMod=v.modelo_codMod;
+
+
+
+/*-------- 2 ----------*/
+
+select c.nome, c.cpf from clientes c
+join veiculo v
+on c.cpf=v.cliente_cpf
+where v.placa like "%0";
+
+
+/*---------- 3 ----------*/
+
+select v.cor, v.placa from veiculo v
+join estaciona e
+on v.placa=e.veiculo_placa
+where e.cod=001;
+
+
+/*---------- 4 ----------*/
+
+select m.Desc_2, v.placa, v.ano from modelo m
+join veiculo v
+on m.codMod=v.modelo_codMod
+where v.ano>=2000;
+
+
+/*--------- 5 -----------*/
+
+select p.ender, e.dtEntrada, e.dtSaida from patio p
+join estaciona e
+on p.num=e.patio_num
+where e.veiculo_placa like '%6';
+
+/*--------- 6 ---------*/
+
+
+
+/*--------- 7 ----------*/
+
+select c.nome, v.placa from clientes c
+join veiculo v
+on c.cpf=v.cliente_cpf
+where v.modelo_codMod=01;
+
+/*--------- 8 ----------*/
+select e.veiculo_placa, e.hsEntrada, e.hsSaida from veiculo v
+join estaciona e
+on v.placa=e.veiculo_placa
+where v.cor="Vermelho";
+
+/*-------- 9 ---------*/
+
+
+/*-------- 10 --------*/
+
+select c.nome, v.placa, m.Desc_2 from clientes c
+join veiculo v
+on c.cpf=v.cliente_cpf
+join modelo m
+on m.codMod=v.modelo_codMod;
