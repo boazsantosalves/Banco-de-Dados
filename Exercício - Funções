@@ -1,0 +1,350 @@
+/*
+drop table ItemPeca;
+drop table ItemServico;
+drop table Peca;
+drop table servico;
+drop table RelatoCliente;
+drop table Orcamento;
+drop table Veiculo;
+drop table Cliente;
+*/
+
+
+/* ------------------------------------- QUESTÃO 1 ----------------------------------------- */
+
+CREATE TABLE Cliente(
+cpf serial not null,
+nome varchar(100),
+endereco text,
+telefone text,
+CONSTRAINT PK_CPF primary key (cpf)
+);
+
+CREATE TABLE Veiculo(
+renavan numeric,
+chassi serial not null,
+placa varchar(8),
+modelo text,
+cor text,
+situacao text,
+cliente int,
+CONSTRAINT PK_CHASSI primary key (chassi),
+CONSTRAINT FK_CLIENTE foreign key (cliente) references Cliente(cpf)
+
+);
+
+*/
+
+
+CREATE TABLE Orcamento(
+id serial not null,
+valor float,
+DataO date,
+situacao text,
+mecanico text,
+totalHoras int,
+previsaoEnt int,
+formaPag text,
+veiculo int,
+CONSTRAINT PK_ORCAMENTO primary key (id),
+CONSTRAINT FK_VEICULO foreign key (veiculo) references Veiculo(chassi)
+);
+
+
+CREATE TABLE RelatoCliente(
+id serial not null,
+problema text,
+dataR date,
+veiculo int,
+CONSTRAINT PK_RELATO primary key (id),
+CONSTRAINT FK_VEICULO foreign key (veiculo) references Veiculo(chassi)
+);
+
+CREATE TABLE Servico(
+id serial not null,
+descricao text,
+custo float,
+tempo varchar(5),
+CONSTRAINT PK_SERVICO primary key (id)
+);
+
+CREATE TABLE Peca(
+id serial not null,
+descricao text,
+custo float,
+CONSTRAINT PK_PECA primary key (id)
+);
+
+CREATE TABLE ItemServico(
+orcamento int,
+servico int,
+situacao text,
+CONSTRAINT FK_ORCAMENTO foreign key (orcamento) references Orcamento(id),
+CONSTRAINT FK_SERVICO foreign key (servico) references servico(id)
+);
+
+CREATE TABLE ItemPeca(
+orcamento int,
+peca int,
+quantidade int,
+custoTotalPeca float,
+situacao text,
+CONSTRAINT FK_ORCAMENTO foreign key (orcamento) references Orcamento(id),
+CONSTRAINT FK_PECA foreign key (peca) references Peca(id)
+);
+
+
+/* ------------------------------------------ QUESTÃO 2 ---------------------------------------------- */
+
+--Optamos por deixar os atributos como serial, então não criamos as sequences.
+
+
+
+
+/* ----------------------------------------- QUESTÃO 3 ----------------------------------------------- */
+
+
+insert into Cliente(nome,endereco,telefone) values('Adilson', 'R. turistando','987451262');
+insert into Cliente(nome,endereco,telefone) values('Max', 'R. felipenses','987441262');
+insert into Cliente(nome,endereco,telefone) values('Victor', 'R. tirulipa','983331262');
+
+select * from Cliente;
+
+
+
+
+insert into Veiculo(renavan,placa,modelo,cor,situacao,cliente) values(1234561, 'AAA-8789', 'Dust', 'Ciano', 'Novo', 1);
+insert into Veiculo(renavan,placa,modelo,cor,situacao,cliente) values(1234562, 'BBC-8789', 'Palio', 'Cinza', 'Novo', 2);
+insert into Veiculo(renavan,placa,modelo,cor,situacao,cliente) values(1234563, 'CCD-8789', 'Porche', 'Vermelho', 'Novo', 3);
+insert into Veiculo(renavan,placa,modelo,cor,situacao,cliente) values(1234564, 'CCE-8789', 'Mustang', 'Vermelho', 'Novo', 3);
+
+
+select * from Veiculo;
+
+
+
+
+
+insert into Orcamento(valor,DataO,situacao,mecanico,totalHoras,previsaoEnt,formaPag,veiculo) values (500.00,'2020-01-01','Espera','Tonny','3',355,'À vista',1);
+insert into Orcamento(valor,DataO,situacao,mecanico,totalHoras,previsaoEnt,formaPag,veiculo) values (300.00,'2020-01-01','Espera','Bruno','2',360,'À vista',2);
+insert into Orcamento(valor,DataO,situacao,mecanico,totalHoras,previsaoEnt,formaPag,veiculo) values (1500.00,'2020-01-01','Pronto','Luís','7',370,'Cartão',3);
+
+select * from Orcamento;
+
+
+
+
+insert into RelatoCliente(problema, DataR,veiculo) values ('Óleo vazando','2020-01-01',1);
+insert into RelatoCliente(problema, DataR,veiculo) values ('Barulho no escapamento','2020-01-02',1);
+
+insert into RelatoCliente(problema, DataR,veiculo) values ('Carburador','2020-01-01',2);
+insert into RelatoCliente(problema, DataR,veiculo) values ('Escapamento','2020-01-01',3);
+
+select * from RelatoCliente;
+
+
+
+
+insert into Servico(descricao,custo,tempo) values('Troca de óleo (bem sucedido)',400.00,2);
+insert into Servico(descricao,custo,tempo) values('Ajuste no escapamento (bem sucedido)',100.00,3);
+insert into Servico(descricao,custo,tempo) values('Troca do escapamento (bem sucedido)',1670.00,7);
+
+select * from Servico;
+
+
+
+
+insert into Peca(descricao,custo) values('chassi usado',350.00);
+insert into Peca(descricao,custo) values('oleo novo',350.00);
+insert into Peca(descricao,custo) values('pistons novos',1000.00);
+insert into Peca(descricao,custo) values('amortecedor novo',200.00);
+
+
+
+select * from Peca;
+
+
+
+insert into ItemServico(orcamento,servico,situacao) values (1,1,'completo');
+insert into ItemServico(orcamento,servico,situacao) values (1,2,'completo');
+insert into ItemServico(orcamento,servico,situacao) values (3,3,'completo');
+
+select * from ItemServico;
+
+
+
+insert into ItemPeca(orcamento,peca,quantidade,custoTotalPeca,situacao) values(1,1,1,350.00,'usada');
+insert into ItemPeca(orcamento,peca,quantidade,custoTotalPeca,situacao) values(2,2,1,350.00,'usada');
+insert into ItemPeca(orcamento,peca,quantidade,custoTotalPeca,situacao) values(3,3,1,1000.00,'nova');
+insert into ItemPeca(orcamento,peca,quantidade,custoTotalPeca,situacao) values(1,4,1,100.00,'nova');
+
+select * from ItemPeca;
+
+
+
+
+-
+/* --------------------------------------------------------- QUESTÃO 4 ---------------------------------------------------------- */
+
+drop function historico(numeric);
+
+create or replace function historico(cod numeric)
+returns setof record as $$
+begin
+
+return query select r.problema,r.DataR from Veiculo v join RelatoCliente r on v.chassi = r.veiculo where v.renavan = cod order by r.DataR;
+return;
+
+end;
+$$ language plpgsql;
+
+select * from historico(1234561) as (problema text,DataR date);
+
+
+
+
+
+
+
+*/ ---------------------------------------------------------- QUESTÃO 5 --------------------------------------------------------- */
+
+-- drop function listagem(character varying);
+
+
+create or replace function listagem(nomeC character varying)
+returns setof record as $$
+begin
+
+return query select v.modelo from Veiculo v join Cliente c on v.cliente = c.cpf where c.nome = nomeC;
+return;
+
+
+end;
+$$ language plpgsql;
+
+select * from listagem('Victor') as (modelo text);
+
+
+
+
+
+
+
+
+/* --------------------------------------------------------- QUESTÃO 6 -------------------------------------------------------- */
+
+-- drop function peças(int);
+
+create or replace function peças(id_orca int)
+returns setof record as $$
+begin
+
+return query select p.descricao from ItemPeca i
+join Peca p
+on p.id=i.peca
+join Orcamento o
+on i.orcamento = o.id
+where o.id = id_orca
+order by p.descricao asc;
+return;
+
+
+end;
+$$ language plpgsql;
+
+select * from peças(1) as (descricao text);
+
+
+
+
+
+/* ----------------------------------------------------------- QUESTÃO 7 ------------------------------------------------------ */
+
+-- drop function servicos(int);
+
+create or replace function servicos(id_orca int)
+returns setof record as $$
+begin
+
+return query select s.descricao from ItemServico i
+join Servico s
+on s.id=i.servico
+join Orcamento o
+on i.orcamento = o.id
+where o.id = id_orca
+order by s.descricao asc;
+return;
+
+
+end;
+$$ language plpgsql;
+
+select * from servicos(3) as (descricao text);
+
+
+
+
+
+
+/* -------------------------------------------------------- QUESTÃO 8 ------------------------------------------------------ */
+
+
+-- drop function gastoTotal(text);
+
+create or replace function gastoTotal(nomeC text)
+returns void as $$
+declare
+total float;
+consulta_rec record;
+begin
+--execute 'select s.custo from ItemServico i join Servico s on i.servico = s.id join Orcamento o on i.orcamento = o.id join Veiculo v on v.chassi = o.veiculo join Cliente c on c.cpf = v.cliente
+--where c.nome = nomeC' into consulta_rec;
+
+total = 0.0;
+for consulta_rec in select s.custo,s.descricao from ItemServico i join Servico s on i.servico = s.id join Orcamento o on i.orcamento = o.id join Veiculo v on v.chassi = o.veiculo join Cliente c on c.cpf = v.cliente
+where c.nome = nomeC loop
+
+total = total + consulta_rec.custo;
+
+end loop;
+
+raise notice 'O total gasto foi: R$ %',total;
+
+
+end;
+$$ language plpgsql;
+
+select * from gastoTotal('Adilson');
+
+
+
+
+
+
+
+
+
+
+
+
+/* ---------------------------------------------------------- QUESTÃO 9 ------------------------------------------------------------- */
+
+-- drop function deletar(int);
+
+create or replace function deletar(id_orca int)
+returns void as $$
+begin
+
+delete from ItemServico where orcamento = id_orca;
+delete from ItemPeca where orcamento = id_orca;
+delete from Orcamento where id = id_orca;
+
+
+end;
+$$ language plpgsql;
+
+
+select * from Orcamento;
+
+
+select * from deletar(3);
